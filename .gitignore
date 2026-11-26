@@ -1,0 +1,25 @@
+# Private classroom samples, source snapshots, and local investigation records.
+/analysis/
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+.pytest_cache/
+/artifacts/
+*.spec
+# Runtime configuration, credentials, archives, and generated native binaries.
+.env
+.env.*
+!.env.example
+*.log
+*.jsonl
+*.rar
+*.zip
+*.7z
+*.exe
+*.dll
+*.sys
+/command.txt
+/SCCMD.txt
+/ToolBoxCfg.json

@@ -1,0 +1,134 @@
+{
+  "build_label": "10.9.1.5433",
+  "build_label_source": "embedded PDB paths",
+  "files": {
+    "AntiHelper.dll": {
+      "sha256": "80dedff1169e047921323d76116abee6507d99c5b87a81b230e470127f44f834",
+      "architecture": "x86"
+    },
+    "LissHelper.exe": {
+      "sha256": "698081a1fde185ed32d1966151624fb82269288c40eda632a0a8b0a717e73271",
+      "architecture": "x86"
+    },
+    "MainLogic.dll": {
+      "sha256": "ff9370d73a416fdeb0a6ea2820ee6e3ae5addbe4d8d4125a1999161cc9f0627c",
+      "architecture": "x86"
+    },
+    "MmcImplBase.dll": {
+      "sha256": "dc93beda184d9aa7ba460837517c20302522464b6213820627ad161ebe8e2435",
+      "architecture": "x86"
+    },
+    "MmcStudent.exe": {
+      "sha256": "66debab7ffac0429707ff943d7e9830c87f78c16c039ac8d5d7c070c5e2f462d",
+      "architecture": "x86"
+    },
+    "MmcWrapper.dll": {
+      "sha256": "e9ab72a47e955d794f7501b494506f119a162aa03435b35db418f0a8bb5ca635",
+      "architecture": "x86"
+    },
+    "MMPC.exe": {
+      "sha256": "85f564bc51fea06745486f0b682cce25064887c9645da0a37d418ef346e019ea",
+      "architecture": "x86"
+    },
+    "ScreenRender.exe": {
+      "sha256": "2049d2a36e1d1115d71c898f2a2b55e2b384ffc15c752088fb28fd4cc96f5a73",
+      "architecture": "x86"
+    },
+    "ScreenSender.exe": {
+      "sha256": "eff0a26ff34e0fcffbeeaa0a53f92853ca0819280974b2bc5cd66d7c712889c9",
+      "architecture": "x86"
+    },
+    "StudentLogic.dll": {
+      "sha256": "d9ac07e6e64c79ef494d12d4f125cf891168d015b4ba4a90821f11a22bb609fa",
+      "architecture": "x86"
+    },
+    "StudentScreenHelper.exe": {
+      "sha256": "2f4af573ab5b3f7fd602ce0d2ceb03d9f20e1a9de6b1abb936c3155c5a7f48fd",
+      "architecture": "x86"
+    },
+    "Teacher.exe": {
+      "sha256": "78c951fcd1b1440d3a3a3971290460facd69e2adc5de0584bc045b3fb9868ba8",
+      "architecture": "x86"
+    },
+    "toolkits/bin/MmcImplBase.dll": {
+      "sha256": "f968cab161b7b931e98b6e20a53b75ff256c3468e25888bd4eeeb810066afe99",
+      "architecture": "x86"
+    },
+    "toolkits/bin/MmcWrapper.dll": {
+      "sha256": "cfefe1a2e939ee7d19b358cdb12af3fe57babb814bbac768e8578b060bfb5a1a",
+      "architecture": "x86"
+    },
+    "x64/DeviceControl_x64.exe": {
+      "sha256": "81d8be11138de43fbd35b927794e1cebc85f293fe89e2c50a1c4e2e8ca2014c5",
+      "architecture": "x86_64"
+    },
+    "x64/easyusbctrl.dll": {
+      "sha256": "18b467e09572c100411f6e6d85fb89a1ae887da3725b35d9ce219d754641336f",
+      "architecture": "x86_64"
+    },
+    "x64/MmcImplBase.dll": {
+      "sha256": "b0577bb27a0cb249f9f9eaf4024dc3840df717b493046776fd64cbb30e46da76",
+      "architecture": "x86_64"
+    },
+    "x64/MmcWrapper.dll": {
+      "sha256": "8ba17922cc73a16719ce14887f83573f300d4383f1dfeaa31be88ba9d04b1f5d",
+      "architecture": "x86_64"
+    },
+    "x64/mtdrpt.sys": {
+      "sha256": "787c182f35827c318365919478b0c1d89f641ea3565b67d595e2ab6616721300",
+      "architecture": "x86_64"
+    },
+    "x64/mtpcpt.sys": {
+      "sha256": "fe685c8af2036679ff9049d227cad8a793b208c4a8cc7d5394ee465f9abdd9db",
+      "architecture": "x86_64"
+    },
+    "x64/NetLimitInterface.dll": {
+      "sha256": "2544ab07f527ef658f99958420fde66a44f889af31a9d2e9afa4f5faa0565708",
+      "architecture": "x86_64"
+    },
+    "x64/OeNetlimit.dll": {
+      "sha256": "39366c3ea5afa8108001c7bde40b5613ebb9c49ab01b402d69fc17edb99dd853",
+      "architecture": "x86_64"
+    },
+    "x64/VkCtrl.dll": {
+      "sha256": "7fd3e39242754ad0c21f0bd6fa06e07962a8599b52943ba5cb2ad2c87039ff6b",
+      "architecture": "x86_64"
+    },
+    "x86/DeviceControl_x86.exe": {
+      "sha256": "99b669cc62c2e9cd0002ae5096a17f87489450e181ffc48e73525e7d67373a90",
+      "architecture": "x86"
+    },
+    "x86/easyusbctrl.dll": {
+      "sha256": "0d2df5fe7a359d56fabbcb851c45b51ad673ceced3729c1ed03220bbca23cc27",
+      "architecture": "x86"
+    },
+    "x86/MmcImplBase.dll": {
+      "sha256": "dc93beda184d9aa7ba460837517c20302522464b6213820627ad161ebe8e2435",
+      "architecture": "x86"
+    },
+    "x86/MmcWrapper.dll": {
+      "sha256": "e9ab72a47e955d794f7501b494506f119a162aa03435b35db418f0a8bb5ca635",
+      "architecture": "x86"
+    },
+    "x86/mtdrpt.sys": {
+      "sha256": "ddba8c1b9361ac564d837eb950cc8061c9c72f5505eae55eb7a11fbaa28e6e3d",
+      "architecture": "x86_64"
+    },
+    "x86/mtpcpt.sys": {
+      "sha256": "9d040864471bb04fd913d743d4f0b928b17971624b3112ba833cff827be19d32",
+      "architecture": "x86_64"
+    },
+    "x86/NetLimitInterface.dll": {
+      "sha256": "10a3ec82a4cd2ccb553e6413f9a80c532fecaa4570d7e21ff5517e774641d343",
+      "architecture": "x86"
+    },
+    "x86/OeNetlimit.dll": {
+      "sha256": "fce4ba6a0a233ff737ec879367d11d53f3bc273d0ac496e9ecf8cf40c6c26f1c",
+      "architecture": "x86"
+    },
+    "x86/VkCtrl.dll": {
+      "sha256": "a43b86aab12281c0caea7995663c1219742ffb69a56677d7ca5fedcbbd9cd48f",
+      "architecture": "x86"
+    }
+  }
+}

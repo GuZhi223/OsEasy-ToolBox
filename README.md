@@ -1,136 +1,85 @@
+# OsEasy-ToolBox 自动增强版
 
-![ToolBox_logo](https://github.com/user-attachments/assets/98db71e1-14e3-420c-9617-896179bed8d7)
+这是 [ZiHaoSaMa66/OsEasy-ToolBox](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox) 的 Fork。在 `v1.8_Beta2` 的原始 Flet 界面上增量修改，保留原有七个页面和手动功能入口。增强功能位于默认的 `auto-enhanced` 分支，上游提交历史完整保留。
 
----
+当前版本：自动增强 **0.1.1**。适配用户提供的教室样本，构建路径标签为 `10.9.1.5433`；运行时使用文件指纹识别。此前独立界面仅作为历史原型保留，当前默认入口已切回原工具箱。
 
-[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ZiHaoSaMa66/OsEasy-ToolBox?label=%E6%9C%80%E6%96%B0%E7%89%88&style=for-the-badge&include_prereleases&color=pink)](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox/releases)
-[![GitHub release](https://img.shields.io/github/release/ZiHaoSaMa66/OsEasy-ToolBox.svg?color=green&style=for-the-badge&label=%E7%A8%B3%E5%AE%9A%E7%89%88)](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox/releases/latest)
-![GitHub all releases download](https://img.shields.io/github/downloads/ZiHaoSaMa66/OsEasy-ToolBox/total?style=for-the-badge&label=%E6%80%BB%E4%B8%8B%E8%BD%BD%E9%87%8F&color=orange)
-![GitHub Repo stars](https://img.shields.io/github/stars/ZiHaoSaMa66/OsEasy-ToolBox?style=for-the-badge&color=yellow)
+## 直接试用
 
-> [!TIP]  
-> 推荐优先使用稳定版    
-> 最新版拥有新特性    
-> 但是可能存在潜在未发现的Bug     
-> ~~稳定版也保不准没有bug（）~~          
+按下方步骤从源码运行，或自行打包后运行 `dist/OsEasyToolBoxEnhanced.exe`。单文件构建面向 64 位 Windows，包含 Python 和 Flet 桌面运行时，可连接 32 位学生端。正常启动通过 Windows UAC 请求管理员权限。
 
-> [!IMPORTANT]
-> **工具箱需要以管理员权限运行!**   
-> 适用于``V10.8.2.4411``桌面云环境的噢易学生端      
-> 如果你学校的电脑是**win7系统**的请使用[轻量版工具箱! (已暂时摆烂停更)](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox-Lite)     
->        
+1. 打开原工具箱，进入 **广播命令** 页。
+2. **自动填写教师机IP** 默认开启。识别到可靠地址后，直接填入原来的 **输入教师机IP地址** 输入框，并显示来源。
+3. 原来的 **由教师机IP生成远程命令** 按钮直接使用这个输入框，无需复制地址。
+4. 手动编辑 IP 会暂停自动填写，保留你的输入；点击 **重新自动识别** 或重新开启自动填写可以恢复。
+5. **进程管理** 页增加 **一键开启自动模式**，接入现有自动处理引擎。停止时恢复本次自动模式修改的窗口状态。
 
-> 这是一些~~废话~~(     
-> 网上几乎搜不到针对噢易的有效制裁工具     
-> (至少在我着手开发的时候是没找到一点..)     
-> (搜到的都是什么~~人机~~噢易的官网)    
-> 搜来搜去实在找不到只能自己动手丰衣足食了   
-> 但是只能说勉强能用 哥们编程也就那样了💦💦    
-> 至少我自己的电脑课上是能用的😎       
- 
-### **[点我看工具箱功能演示视频! (BiliBili)](https://www.bilibili.com/video/BV12ZgeetEWr)**
+仅获取 IP 不需要先开启自动处理模式；打开工具箱后就会后台识别。
 
+## 教师机 IP 的依据
 
-## 🚀 快速开始 脱控摸鱼!
+- 使用通过样本校验的本机学生端控制连接。读取已建立的 TCP 连接，按样本 `skin/core.conf` 的 `ConnectPort` 识别控制通道；缺少该文件时采用样本默认端口 9003。
+- 读取当前广播进程参数中的明确 `teacher_ip` 字段，以及刚收到的有效广播启动参数。
+- 单播 `remote` 只列为来源候选，不直接自动填入。组播地址、本机地址、回环地址、无效值和 `0.0.0.0` 都排除。
+- 多个可靠地址冲突时提示冲突，不随意填入。连接变化后重新核对，已过期的自动结果不会当作当前地址。
 
-> [!IMPORTANT]    
-> 在`V10.9.0.4881`的学生端使用时     
-> 遇到脚本提示拒绝访问则需要**停止学生端根服务**     
-> 如果你发现学生端没有自动重启可以手动重启服务     
-> ***不保证功能在其他版本的噢易学生端中均可用***     
+实现仅读取本机进程和连接信息，不扫描局域网。自动识别到地址只更新原输入框，不替你点击生成命令或其他手动操作。
 
-> 简单说下我的使用过程     
+## 自动模式的当前覆盖
 
+自动广播参数和窗口处理、已定位的新快捷键/特定网络/USB 限制请求处理、后台事件记录和窗口恢复，均已接到原工具箱的进程管理页。
 
-1. `其他管理 -> 删除键盘锁驱动&控屏锁定程序&黑屏安静 -> 三者一起删除`      
-   等待删除完毕后 可以按任意按键跳过注销脚本的等待    
-   待注销完毕后回到登录回来继续步骤    
-     
+黑屏、未知的已有驱动锁定、其余远程控制路径仍未完整覆盖。拒绝一个新限制请求不等于已经解除以前的限制，状态会区分已接入和待适配。
 
-2. `其他管理 -> 解除网络限制锁`    
-   如果老师平时不锁网络可以跳过这一步     
-   如果不需要广播管理等功能可以直接跳过下面的步骤     
-   直接 `进程管理 -> 挂起学生端主进程` 挂起进程后直接开玩 (
-      
+原有手动按钮继续沿用原实现；用户对旧工具箱的实机反馈仍作为原功能基线，新增自动功能和这份重新构建的 EXE 还需要教室实测。原版需要旁置 `ScreenRender_Helper.exe` 的手动替换功能，仍应沿用原工具箱的辅助文件和放置方式。
 
-3. `屏幕广播管理 -> 替换拦截广播命令程序`    
-   此时只需要等待老师广播一次就可以拦截到广播命令了     
-   如果**有需要**可以提前 使用 `进程管理 -> 替换粘滞键为cmd脚本`    
-   来快捷强制关闭学生端     
-   **如果你在上一次已经完成了第4步可以直接跳过这一步**     
+## 源码结构
 
+- `src/REmainv3.py`：原 Flet 界面；教师 IP 输入框绑定、自动填写状态和自动模式入口。
+- `src/remain.py`：原手动功能实现。运行目录初始化延迟到正式启动，管理员启动参数支持带空格的路径。
+- `src/Fake_SCR.py`：原辅助源码，未重新实现其协议。
+- `oseasy_auto/teacher.py`：本机连接与广播参数中的教师 IPv4 识别。
+- `oseasy_auto/toolbox_integration.py`：自动填写策略、后台识别和原界面之间的桥接。
+- `oseasy_auto/engine.py`、`assets/observer.js`：复用的自动处理后端。
+- `run.py`：默认启动原 Flet 工具箱。
 
-4. `关于 -> 长按打开工具箱Github页面 -> 读取已拦截的广播命令`     
-    工具箱所在目录下会生成一个command.txt文件     
-    下次上机时你可以直接将command.txt文件内容复制到`输入广播命令`输入框中     
-    最后 `关于 -> 长按打开工具箱Github页面 -> 手动更新广播命令`     
+原项目首次启动时对 Autodesk DLL 的无关重命名已移除。交互预览使用临时配置目录，禁用手动操作，不启动教师/学生端样本或自动处理模式。
 
-    在`v1.7 RC`后续的版本将不需要 `长按打开工具箱Github页面`     
-    直接在 `关于` 页中点击对应功能即可
+## 开发和验证
 
-    确保已经有 **正确** 的命令填入输入框     
-    请不要让输入框为空时 点击 `手动更新广播命令`
+```powershell
+git clone --branch auto-enhanced https://github.com/GuZhi223/OsEasy-ToolBox.git
+cd OsEasy-ToolBox
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe run.py
+```
 
-    你得到的广播命令的格式 应该是这样的格式
-`
-{#decoderName#:#h264#,#fullscreen#:0,#local#:#172.18.17.152#,#port#:7778,#remote#:#229.1.17.200#,#teacher_ip#:0,#verityPort#:7788}`
+```powershell
+.\.venv\Scripts\python.exe run.py --demo
+.\.venv\Scripts\python.exe run.py --probe
+.\.venv\Scripts\python.exe run.py --self-test
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe tools\preview_original.py
+.\tools\build.ps1
+```
 
-    请确保你的命令中的 `#local#` IP地址值 和 你的机器IP地址 **一致**
+`--demo` 打开原 Flet 界面的禁用操作预览，展示示例 IP 自动填入原框；`--probe` 只读识别；`--self-test` 仅连接本程序新建的测试进程。
 
-5. 最后打开`广播管理`的快捷键相关选项 和 `进程管理 -> 挂起学生端主进程`     
-   就可以开玩了(
+自动化测试包含原输入框与原生成按钮绑定、手动输入保护、无须启用自动处理即可识别 IP、地址误判/冲突/过期处理，以及自动模式的窗口恢复、请求边界和跨位数连接。原生测试使用自建测试程序和模拟 DLL，不调用教室样本或真实驱动。
 
-> 可能某些功能上手用的时候会有点抽象     
-> (理解理解.jpg)   
+本机验证环境为 Windows 11，当前 **45 项测试通过**。普通运行和打包不需要 C 编译器；完整原生测试需要 PATH 中可用的 MinGW GCC，跨位数测试使用 Windows 自带的 .NET Framework x86 编译器，缺少相应编译器时对应测试会跳过。实际课堂中的控制连接和广播格式仍需要实机核验。
 
-想要定制自己的的一言?   
+## 记录与说明
 
-[点我查看外部一言格式说明!](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox/blob/main/外部一言格式说明.md)
+原手动功能继续使用原配置和备份位置。新增自动模式日志及窗口恢复记录在 `%LOCALAPPDATA%/OsEasyAuto/`，其中教师 IP 变化会记录地址和来源，不记录完整远程命令参数。
 
-----
+参见 [原项目增强版试用说明](docs/原项目增强版试用说明.md)、[自动模式设计](docs/自动模式设计.md) 和 [样本适配范围](docs/样本适配范围.md)。`docs/独立原型历史说明.md` 仅记录之前的独立界面原型。
 
-### ✨ 上机实战效果截图
+仓库只公开源码、测试、构建脚本和整理后的文档；教室软件样本、学生端二进制和驱动、配置、原始分析记录、运行日志与本机打包产物均不上传。
 
-**效果图中老师均使用了全屏广播**    
-通过工具箱的拦截广播命令实现的     
-**无视全屏广播**手动打开窗口广播     
+## 归属与许可
 
-<details>
-<summary>点击展开查看截图</summary>
+原工具箱归 [ZiHaoSaMa66/OsEasy-ToolBox](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox) 作者所有。上游在本次 Fork 时未附 LICENSE，本仓库保留其归属，不把上游代码重新标记为 MIT。[上游原始说明](docs/UPSTREAM-README.md) 保留了原作者的项目介绍和使用声明。
 
-![批注 2024-05-30 172101](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox/assets/134737096/bd62df84-db76-4c0e-a591-c24ea8fdbab2)
-
-![批注 2024-06-13 171855](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox/assets/134737096/7845f270-824f-4399-92f9-2ff6b7e2f3d6)
-
-> 很早就想截了 但是一拖再拖(     
-
-</details>
-
-----
-
-### 👀 工具箱界面截图   
-<details>
-<summary>点击展开查看截图</summary>
-  
-![1](https://github.com/user-attachments/assets/d9b8b8bf-9a82-4ca7-b0a7-822d230b4910)
-
-![2](https://github.com/user-attachments/assets/9b55ea88-4752-4e13-8be2-3ee4698dbcd0)
-
-![3](https://github.com/user-attachments/assets/0c5d8c07-8538-45ee-8d84-c302ce4e8634)
-
-![4](https://github.com/ZiHaoSaMa66/OsEasy-ToolBox/assets/134737096/3b011ff9-1808-4a26-81e2-89d72bccf383)
-
-![5](https://github.com/user-attachments/assets/3aa601da-56d1-4a5f-9a63-642722c1cb7f)
-
-
-</details>
-
-----
-
-### 🌈 最后的最后..
-如果你喜欢我的破工具箱可以点个⭐Star⭐   
-感谢有你们的Star鼓励💖     
-
-有问题&发现Bug&提供建议可以提提issue     
-同时如果你有兴趣也可以开开PR    
-愿我们的电脑课都不再无聊~🥳   
+我们新增的自动逻辑、测试、脚本和文档采用 MIT 许可，范围见 [LICENSE-ENHANCEMENTS.md](LICENSE-ENHANCEMENTS.md)。本仓库整体包含未明确许可的上游代码，因此不是统一 MIT 授权的软件包；对整体的再分发与商用应先取得上游授权。来源和设计参考见 [UPSTREAM.md](UPSTREAM.md) 与 [NOTICE.md](NOTICE.md)。

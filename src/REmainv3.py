@@ -1,11 +1,12 @@
-from remain import *
+if __package__ in (None, ""):
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.remain import *
+from oseasy_auto.toolbox_integration import AutoFillPolicy, ToolboxAutomation
+import threading
 
-fstst = ToolBoxCfg.first_launch_check()
-if fstst == True:
-    usecmd_runcmd(
-        'rename "C:\\Program Files\\Autodesk\\Autodesk Sync\\AdSyncNamespace.dll" "AdSyncNamespace.dll.bak"'
-    )
-# fixed pyqt bind to autodesk360 dll
+fstst = False
 
 import flet as ft
 
@@ -123,7 +124,13 @@ class Ui:
 
     def __init__(self) -> None:
 
-        self.ver = "OsEasy-ToolBox v1.8 Beta2"
+        self.ver = "OsEasy-ToolBox v1.8 Beta2 · 自动增强 0.1.1"
+        self.preview = False
+        self.auto_on_launch = False
+        self.automation = None
+        self.teacher_fill_policy = AutoFillPolicy()
+        self.automation_ui_lock = threading.RLock()
+        self.closing = False
 
         self.hotkeyManager = HotkeyManager()
 
@@ -227,6 +234,9 @@ class Ui:
     def main(self, bruh: ft.Page):
         self.page = bruh
         self.page.title = self.ver
+        self.page.window_prevent_close = True
+        self.page.on_window_event = self.automation_window_event
+        self.page.on_disconnect = self.automation_disconnected
         self.page.fonts = {"ht": fontpath}
         self.page.theme = ft.Theme(font_family="ht")
         self.page.update()
@@ -375,8 +385,15 @@ class Ui:
         )
 
 
+        self.auto_mode_button = ft.FilledTonalButton(
+            text="一键开启自动模式", icon=ft.icons.AUTO_FIX_HIGH,
+            on_click=self.toggle_automatic_mode,
+        )
+        self.auto_mode_status = ft.Text("自动识别教师IP已开启；自动处理模式尚未开启", size=12)
         self.funcTab_Stuff = ft.Column(
             controls=[
+                self.auto_mode_button,
+                self.auto_mode_status,
                 self.yiyanshowtext,
                 ft.Divider(height=1),
                 self.mmpc_Stext,
@@ -458,7 +475,10 @@ class Ui:
             ]
         )
 
-        self.teachIp_input = ft.TextField(label="输入教师机IP地址")
+        self.teachIp_input = ft.TextField(label="输入教师机IP地址", on_change=self.teacher_ip_manual_change)
+        self.teacher_auto_switch = ft.Switch(label="自动填写教师机IP", value=True, on_change=self.teacher_ip_auto_changed)
+        self.teacher_ip_status = ft.Text("等待教师连接或广播，识别后将自动填入上方输入框", size=12)
+        self.teacher_refresh_button = ft.TextButton("重新自动识别", icon=ft.icons.REFRESH, on_click=self.teacher_ip_refresh)
         # 自动生成命令
         self.auto_gennerate_cmd = ft.FilledTonalButton(
             text="由教师机IP生成远程命令",
@@ -645,9 +665,21 @@ class Ui:
 
         self.try_get_history_path()
 
-        self.reflashStudentPath()
+        if not self.preview:
+            self.reflashStudentPath()
 
         pass_ui_class(self)
+        if self.preview:
+            self.teacher_ip_received({"state": "resolved", "address": "192.0.2.10", "source": "交互预览 · 示例地址"})
+            self.MyRail.selected_index = 3
+            self.SWC_MainPages_3()
+            self.page.disabled = True
+            self.page.update()
+            return
+        self.automation = ToolboxAutomation(self.teacher_ip_received, self.automatic_event_received)
+        self.automation.start()
+        if self.auto_on_launch:
+            self.toggle_automatic_mode()
         
         self.hotkeyManager.switch_reg_helper(
             self.hide_tbox_swc.value,
@@ -675,6 +707,85 @@ class Ui:
             self.show_snakemessage(f"更新路径失败\n也许是学生端未运行??")
         pass
 
+    def teacher_ip_received(self, state):
+        with self.automation_ui_lock:
+            update = self.teacher_fill_policy.apply(self.teachIp_input.value, state)
+            self.teachIp_input.value = update.value
+            self.teacher_auto_switch.value = update.enabled
+            self.teacher_ip_status.value = update.caption
+            self.page.update()
+
+    def teacher_ip_manual_change(self, *e):
+        with self.automation_ui_lock:
+            self.teacher_fill_policy.manual_input()
+            self.teacher_auto_switch.value = False
+            self.teacher_ip_status.value = "保留手动输入；开启自动填写后可重新识别"
+            self.page.update()
+
+    def teacher_ip_auto_changed(self, *e):
+        with self.automation_ui_lock:
+            if self.teacher_auto_switch.value:
+                self.teacher_fill_policy.enable(self.teachIp_input.value)
+                if self.automation:
+                    self.teacher_ip_received(self.automation.current_teacher)
+                    self.automation.refresh()
+            else:
+                self.teacher_ip_manual_change()
+
+    def teacher_ip_refresh(self, *e):
+        with self.automation_ui_lock:
+            self.teacher_auto_switch.value = True
+            self.teacher_ip_auto_changed()
+
+    def toggle_automatic_mode(self, *e):
+        if not self.automation:
+            return
+        try:
+            active = self.automation.toggle_mode()
+            self.auto_mode_button.text = "停止自动模式并恢复" if active else "正在停止并恢复…"
+            self.auto_mode_status.value = "正在准备自动模式" if active else "正在停止本次监听并恢复窗口"
+            self.page.update()
+        except Exception as error:
+            self.show_snakemessage(str(error))
+
+    def automatic_event_received(self, event):
+        with self.automation_ui_lock:
+            if event["kind"] == "status":
+                self.auto_mode_status.value = event["title"]
+            elif event["kind"] == "stopped":
+                self.auto_mode_button.text = "一键开启自动模式"
+                self.auto_mode_status.value = event["title"]
+            else:
+                self.auto_mode_status.value = event["title"] + ("\n" + event["detail"] if event["detail"] else "")
+            self.page.update()
+
+    def automation_disconnected(self, *e):
+        if self.automation:
+            self.automation.close()
+        self.hotkeyManager.stop()
+
+    def automation_window_event(self, event):
+        if event.data != "close" or self.closing:
+            return
+        self.closing = True
+        def finish():
+            try:
+                clean = self.automation.close() if self.automation else True
+                self.hotkeyManager.stop()
+                if clean:
+                    self.page.window_destroy()
+                else:
+                    self.show_snakemessage("部分恢复尚未确认，请查看自动模式状态。恢复记录已保留。")
+                    if self.automation.engine and self.automation.engine.thread.is_alive():
+                        self.closing = False
+                        self.automation.start()
+                    else:
+                        self.page.window_destroy()
+            except Exception as error:
+                self.closing = False
+                self.show_snakemessage(str(error))
+        threading.Thread(target=finish, name="toolbox-close", daemon=True).start()
+
     def HotKey_KillSCR(self, *e):
         """快捷键截图开关触发函数"""
         # print("DEBUG e obj > ",e)
@@ -698,7 +809,9 @@ class Ui:
         eval(exc)
 
     def apply_bg_to_ui(self, needLoad_Stuff_list: list):
-
+        if isinstance(needLoad_Stuff_list, ft.Column):
+            needLoad_Stuff_list.scroll = ft.ScrollMode.AUTO
+            needLoad_Stuff_list.height = max(300, self.page.window_height - 85)
         if self.loaded_bg == True:
             bgb = ft.Stack(controls=[self.col_imgbg, needLoad_Stuff_list])
             nedadd = ft.Row(
@@ -838,6 +951,9 @@ class Ui:
                 self.conl_ycCmd_update,
                 self.conl_ycCmd_update_with_replace_ip,
                 self.teachIp_input,
+                self.teacher_auto_switch,
+                self.teacher_ip_status,
+                self.teacher_refresh_button,
                 self.auto_gennerate_cmd,
                 self.conl_from_log_get_cmd,
                 self.conl_getyccmd_btn,
@@ -1150,7 +1266,30 @@ class Ui:
 
 
 
-ToolBox = Ui()
+def launch(preview=False, autostart=False):
+    global ToolBox, fstst
+    if preview:
+        import tempfile
+        preview_directory = tempfile.TemporaryDirectory(prefix="oseasy-toolbox-preview-")
+        initialize_runtime(preview_directory.name)
+    else:
+        run_upto_admin()
+        initialize_runtime()
+    fstst = ToolBoxCfg.first_launch_check()
+    ToolBox = Ui()
+    ToolBox.preview = preview
+    ToolBox.auto_on_launch = autostart
+    if preview:
+        ToolBox.ver += " · 交互预览"
+    try:
+        ft.app(target=ToolBox.main)
+    finally:
+        if ToolBox.automation:
+            ToolBox.automation.close()
+        ToolBox.hotkeyManager.stop()
+        if preview:
+            preview_directory.cleanup()
 
 
-ft.app(target=ToolBox.main)
+if __name__ == "__main__":
+    launch()

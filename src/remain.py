@@ -28,11 +28,18 @@ MMPCServRun = True
 
 
 
-try:
-    os.makedirs(cmdpath, mode=0o777, exist_ok=True)
-    os.makedirs(bkppath, mode=0o777, exist_ok=True)
-except PermissionError:
-    raise Exception("权限不足: 请右键使用管理员身份运行")
+def initialize_runtime(preview_directory=None):
+    """Initialize paths only at application launch, not when importing helpers."""
+    global cmdpath, bkppath
+    if preview_directory is not None:
+        cmdpath = os.path.join(str(preview_directory), "scripts")
+        bkppath = os.path.join(str(preview_directory), "backups")
+        ToolBoxCfg.config_file_path = os.path.join(str(preview_directory), "ToolBoxConfig.json")
+    try:
+        os.makedirs(cmdpath, mode=0o777, exist_ok=True)
+        os.makedirs(bkppath, mode=0o777, exist_ok=True)
+    except PermissionError:
+        raise Exception("权限不足: 请右键使用管理员身份运行")
 
 class EasyDll:
     def __init__(self, dll_path):
@@ -813,9 +820,13 @@ def check_MMPC_status() -> bool:
 def run_upto_admin() -> None:
     """用于在非管理员运行时尝试提权"""
     if ctypes.windll.shell32.IsUserAnAdmin() == 0:
-        ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", sys.executable, "".join(sys.argv), None, 1
-        )
+        import subprocess
+        arguments = sys.argv[1:] if getattr(sys, "frozen", False) else [os.path.abspath(sys.argv[0]), *sys.argv[1:]]
+        shell = ctypes.windll.shell32.ShellExecuteW
+        shell.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_int]
+        shell.restype = ctypes.c_ssize_t
+        if shell(None, "runas", sys.executable, subprocess.list2cmdline(arguments), None, 1) <= 32:
+            raise RuntimeError("管理员启动未完成")
         sys.exit()
 
 
